@@ -1,97 +1,424 @@
 import './styles/style.css';
-// import leftArrow from './assets/left-arrow.png';
-// import rightArrow from './assets/right-arrow.png';
 import searchIcon from './assets/search.png';
-import movie1 from './assets/movie1-compressed.jpg';
-import movie2 from './assets/movie2-compressed.jpg';
-import movie3 from './assets/movie3-compressed.jpg';
-import movie4 from './assets/movie4-compressed.jpg';
-import movie5 from './assets/movie5-compressed.jpg';
-import movie6 from './assets/movie6-compressed.jpg';
-import movie7 from './assets/movie7-compressed.jpg';
-import movie8 from './assets/movie8-compressed.jpg';
 
 
-const shownSlides = 3; // show these number of slides
-const scrollSlides = 3; // scroll by these slides
-let currentIndex = 0;
-// const leftArrowImg = document.getElementById('leftArrowImg');
-// leftArrowImg.src = leftArrow;
-// const rightArrowImg = document.getElementById('rightArrowImg');
-// rightArrowImg.src = rightArrow;
-const searchIconImg = document.getElementById('searchIcon');
-searchIconImg.src = searchIcon;
+//importing and initializing firebase
+import { initializeApp } from 'firebase/app';
+const firebaseApp = initializeApp({
+  apiKey:process.env.apiKey,
+  authDomain: process.env.authDomain,
+  projectId: process.env.projectId,
+  storageBucket: process.env.storageBucket,
+  messagingSenderId: process.env.messagingSenderId,
+  appId: process.env.appId
+});
 
-const movie1Img = document.getElementById('movie1');
-movie1Img.src = movie1;
-const movie2Img = document.getElementById('movie2');
-movie2Img.src = movie2;
-const movie3Img = document.getElementById('movie3');
-movie3Img.src = movie3;
-const movie4Img = document.getElementById('movie4');
-movie4Img.src = movie4;
-const movie5Img = document.getElementById('movie5');
-movie5Img.src = movie5;
-const movie6Img = document.getElementById('movie6');
-movie6Img.src = movie6;
-const movie7Img = document.getElementById('movie7');
-movie7Img.src = movie7;
-const movie8Img = document.getElementById('movie8');
-movie8Img.src = movie8;
+ // importing firebase service
+import { 
+  getFirestore, collection, getDocs
+ } from 'firebase/firestore';
+
+// initialize services (db = database)
+const db = getFirestore(firebaseApp);
+// create an array containing each movie
+let movies = []
+// defining the specific collection we want to "pull data from" (collection ref)
+// the function "collection" is not used on the db object, instead, it's imported directly from firebase. The reference is stored in the variable colRef
+const colRef = collection(db, 'movies')
+
+// get collection data
+// this returns a promise
+getDocs(colRef)
+ .then((snapshot) => {
+  
+    
+    // cycle through each item in snapshot and each time fire a function for each item
+    snapshot.docs.forEach((doc) => {
+      // get certain data and push it in the array
+      // by calling the .data method on the doc object we get the data we return the object with different data properties
+      movies.push({ ...doc.data(), id: doc.id })
+    });
+    initializeMovieLibrary(movies);
+ });
+
+ const trending = document.getElementById('trending');
+ const mostViewed = document.getElementById('mostViewed');
+ const ratings = document.getElementById('ratings');
+ const searchIconImg = document.getElementById('searchIcon');
+//  const exitButtonImg = document.getElementById('exit');
+ const searchInput = document.getElementById('textInput')
+ const searchIconButton = document.getElementById('searchIcon');
+ const popupCardContainer = document.getElementById('popupCardContainer');
+ const popupCardContainerContent =document.getElementById("popupCardContainerContent");
+ const overlay = document.getElementById("popupOverlay");
+ let screenWidth = window.innerWidth;
+ let screenHeight = window.innerHeight;
+ 
+ searchIconImg.src = searchIcon;
+//  exitButtonImg.src = exitButton;
+
+// Detect screen size
+window.addEventListener('resize', function () {
+  screenWidth = window.innerWidth;
+  screenHeight = window.innerHeight;
+  console.log(screenWidth)
+});
 
 
-const trackCarousel = document.querySelector('.movie-card-wrapper')
-const slides = Array.from(trackCarousel.children);
 
-var docWidth = document.documentElement.offsetWidth;
 
-[].forEach.call(
-  document.querySelectorAll('*'),
-  function(el) {
-    if (el.offsetWidth > docWidth) {
-      console.log(el);
+
+
+
+
+
+
+
+ // fills the library with movies, in an order based on conditions
+function initializeMovieLibrary(movies) {
+      let movieList = movies
+      removeMovieCards()
+    
+  if (mostViewed.classList.contains('active') === true) {
+        movieList.forEach((movie) => {
+          const movieCard = document.createElement('div');
+          movieCard.addEventListener('click', showPopupCard);
+          movieCard.innerHTML = `
+          <div class="card" tabindex="1"
+          data-id="${movie.id}" 
+          data-genre="${movie.genre}"
+          data-trending="${movie.trending}"
+          data-views="${movie.views}">
+            <img src="${movie.img}" alt="">
+              <div class="card-content">
+                <div class="titles-wrapper flex-item">
+                  <h2 class="movie-title">${movie.title}</h2>
+                  <h4 class="subtitle">${movie.subtitle}</h4>
+                </div>
+                <div class="info-wrapper flex-item">
+                  <h5 class="ratings">Rating: ${movie.rating}/10</h5>
+                  <p class="movie-info">${movie.info}</p>
+                </div>
+              </div>
+            </div>`;
+            document.getElementById('cardsWrapper').appendChild(movieCard);
+            // console.log(movieCard);
+            
+        });
+      
+  } else if (ratings.classList.contains('active') === true){
+    
+    movieList.forEach((movie) => {
+      const movieCard = document.createElement('div');
+      movieCard.addEventListener('click', showPopupCard);
+      movieCard.innerHTML = `
+      <div class="card" tabindex="1"
+      data-id="${movie.id}" 
+      data-genre="${movie.genre}"
+      data-trending="${movie.trending}"
+      data-views="${movie.views}">
+        <img src="${movie.img}" alt="">
+          <div class="card-content">
+            <div class="titles-wrapper flex-item">
+              <h2 class="movie-title">${movie.title}</h2>
+              <h4 class="subtitle">${movie.subtitle}</h4>
+            </div>
+            <div class="info-wrapper flex-item">
+              <h5 class="ratings">Rating: ${movie.rating}/10</h5>
+              <p class="movie-info">${movie.info}</p>
+            </div>
+          </div>
+        </div>`;
+        document.getElementById('cardsWrapper').appendChild(movieCard);
+        // console.log(movieCard);
+    });
+  } else {
+    let randomizedMovieList = movieList.sort(() => Math.random() - .5);
+   
+
+      randomizedMovieList.forEach((movie) => {
+      const movieCard = document.createElement('div');
+      movieCard.addEventListener('click', showPopupCard);
+      movieCard.innerHTML = `
+        <div class="card" tabindex="1" 
+        data-id="${movie.id}"
+        data-genre="${movie.genre}"
+        data-trending="${movie.trending}"
+        data-views="${movie.views}">
+          <img src="${movie.img}" alt="">
+            <div class="card-content">
+              <div class="titles-wrapper flex-item">
+                <h2 class="movie-title">${movie.title}</h2>
+                <h4 class="subtitle">${movie.subtitle}</h4>
+              </div>
+              <div class="info-wrapper flex-item">
+                <h5 class="ratings">Rating: ${movie.rating}/10</h5>
+                <p class="movie-info">${movie.info}</p>
+              </div>
+            </div>
+          </div>`;
+        document.getElementById('cardsWrapper').appendChild(movieCard);
+        // console.log(movieCard);
+        
+       
+      });
+    };
+    
+}
+
+
+
+
+// POPUP CARD SETUP
+function showPopupCard(e) {
+  const clickedCard = e.target.closest('.card');
+  const movieId = clickedCard.getAttribute('data-id');
+
+  console.log(clickedCard.getAttribute('data-id'));
+
+  // Finds the movie in the 'movies' array using the retrieved movie ID from the getAttribute
+
+  const movie = movies.find((movie) => movie.id === movieId)
+  document.body.style.overflow = "hidden";
+  if (movie) {
+    const popupCard = document.createElement('div');
+    popupCard.classList.add('popup-card');
+    popupCard.innerHTML = `
+          <img src="${movie.img}" alt="">
+         
+          <div class="popup-card-text">
+              <h2 class="movie-title">${movie.title}</h2>
+              <h4 class="subtitle">${movie.subtitle}</h4>
+              <h5 class="movie-genre">${movie.genre}</h5>
+              <h5 class="ratings">Rating: ${movie.rating}/10</h5>
+              <p class="movie-info">${movie.info}</p>
+          </div>
+        `;
+    // removePopupCard();
+    popupCardContainerContent.appendChild(popupCard);
+    // popupCard.addEventListener('click', checkForCardExistence);
+    popupCardContainer.classList.remove('hide');
+    popupCard.addEventListener('click', checkForFullScreenCard);
+    // popupCard.addEventListener('touchstart', checkForFullScreenCard);
+   
+  }
+};
+
+
+// window.addEventListener('click', function(e){   
+//   if (document.getElementById('popupCardContainer').contains(e.target)){
+//     console.log('clicked the box')
+    
+//   } else {
+//     console.log('clicked out the box')
+    
+//   }
+// });
+
+
+
+overlay.addEventListener('click', removePopupCard);
+
+
+
+
+
+
+function checkForFullScreenCard(e) {
+  const target = e.target
+  console.log(target);
+  console.log(screenWidth)
+  // console.log(target.closest('#popupCardContainer'));
+  if (screenWidth <= 650 && target.closest('.popup-card')) {
+    console.log(target.closest('.popupCard'));
+    removePopupCard()
+  }
+}
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    // console.log('heyho');
+    removePopupCard()    
+  };
+});
+//////////////////////////////////////////////////
+
+
+function removePopupCard() {
+    // console.log('i have children')
+  while (popupCardContainerContent.firstChild) {
+    popupCardContainerContent.removeChild(popupCardContainerContent.firstChild);
+    popupCardContainer.classList.add("hide")
+  }
+  document.body.style.overflow = null;
+}
+
+
+
+
+
+
+
+// sets an event listener to every filter-item
+const filterItems = Array.from(document.querySelectorAll('.filter-item'));
+filterItems.forEach((item) => {
+  item.addEventListener('click', selectedFilter);
+})
+
+// Trending Movies functions
+trending.addEventListener('click', trendingFilter);
+function trendingFilter(e) {
+    let trendingFilterClick = e.target;
+    filteredTrendingMovies(trendingFilterClick);   
+}
+
+function filteredTrendingMovies() {
+  const filteredMoviesArray = movies.filter(movie => movie.trending === true);
+  const allMovieCardsWrapper = document.getElementById('cardsWrapper');
+    while (allMovieCardsWrapper.firstChild) {
+      allMovieCardsWrapper.removeChild(allMovieCardsWrapper.firstChild);
+    }    
+    initializeMovieLibrary(filteredMoviesArray);
+  
+}
+
+// Most Viewed Movies functions
+mostViewed.addEventListener('click', mostViewedFilter);
+function mostViewedFilter(e) {
+    let trendingFilterClick = e.target;
+    filteredMostViewedMovies(trendingFilterClick);
+}
+
+function filteredMostViewedMovies() {
+  const filteredMoviesArray = movies.sort((a, b) => b.views - a.views);
+  
+  const allMovieCardsWrapper = document.getElementById('cardsWrapper');
+    while (allMovieCardsWrapper.firstChild) {
+      allMovieCardsWrapper.removeChild(allMovieCardsWrapper.firstChild);
+    }   
+    initializeMovieLibrary(filteredMoviesArray);
+    
+}
+
+// Rating Movies functions
+ratings.addEventListener('click', ratingsFilter);
+function ratingsFilter(e) {
+    let ratingsFilterClick = e.target;
+    filteredMoviesByRating(ratingsFilterClick);
+}
+
+function filteredMoviesByRating() {
+  const filteredMoviesArray = movies.sort((a, b) => b.rating - a.rating);
+  console.log(filteredMoviesArray);
+  const allMovieCardsWrapper = document.getElementById('cardsWrapper');
+    while (allMovieCardsWrapper.firstChild) {
+      allMovieCardsWrapper.removeChild(allMovieCardsWrapper.firstChild);
+    }
+    
+    initializeMovieLibrary(filteredMoviesArray);    
+}
+
+
+// resets the filter active status on click
+function resetFiltersOnClick() {
+  const filterItems = Array.from(document.querySelectorAll('.filter-item'));
+  filterItems.forEach(item => {
+    item.classList.remove('active');
+  });
+}
+
+// function for selecting the targeted filter
+function selectedFilter(e) {
+
+  // calls defined functions
+  resetFiltersOnClick()           
+  let targetFilter = e.target;
+  // checkForCardExistence(targetFilter);
+  filteredMovies(targetFilter);
+  utilityClass(targetFilter);
+}
+
+//add utility class
+function utilityClass(e) {
+  const filterItem = e;
+  filterItem.classList.add('active');
+}
+
+// using the targeted filter we filter the movies array based on genre
+function filteredMovies(targetFilter) {
+
+    const filteredGenre = targetFilter.innerText.toLowerCase();
+    const filteredMoviesArray = movies.filter(movie => movie.genre === filteredGenre);
+    
+    // TRYING WITH REMOVING AND ADDING ELEMENTS AGAIN
+    initializeMovieLibrary(filteredMoviesArray);
+  }
+
+function removeMovieCards() {
+    const allMovieCardsWrapper = document.getElementById('cardsWrapper');
+    while (allMovieCardsWrapper.firstChild) {
+      allMovieCardsWrapper.removeChild(allMovieCardsWrapper.firstChild);
     }
   }
-);
-// console.log(trackCarousel.getBoundingClientRect().width / shownSlides )
+    
+   
 
 
-// //IF you put margins between cards you need to calculate the distance between them and include it
-// slides.forEach((slide) => {
-//     console.log(slide.getBoundingClientRect().width / shownSlides)
 
-//     // const element = document.querySelector(slide);
-//     slide.style.width = trackCarousel.getBoundingClientRect().width / shownSlides + "px";
 
-// })
+// SEARCH FUNCTIONS
+searchIconButton.addEventListener('click', filterBySearch);
+searchInput.addEventListener("keyup", (event) => {
+  if (event.key === "Enter") {
+    filterBySearch();
+  }
+});
 
-// console.log(slides?.[0]?.clientWidth)
-// trackCarousel.style.width = slides?.[0]?.clientWidth * shownSlides + "px"
-// trackCarousel.style.transform = `translateX(0)`;
+searchInput.addEventListener('input', checkValidInput);
+function checkValidInput() {
+  document.querySelector('.navigation-filter').classList.remove('show-error');
+  searchInput.value = searchInput.value.replace(/[.*+\-?^${}()|[\]\\]/g, '');
+}
 
-// trackCarousel.addEventListener("click", (e) => {
+
+
+
+
+
+
+
+
+
+
+// THIS CHECKS FOR MATCHES IN INPUT AND TITLES BY USING REGEX
+function filterBySearch() {
+  console.log(searchInput.value)
+   
+    const minLength = 1; // Minimum length of the search text
   
-//     const selectedSlide = e?.target;
-//     const parent = e?.target?.parentNode;
-//     const allChildNodes = parent?.childNodes;
-//     allChildNodes.forEach((node) => {
-//         if(node.nodeType !== 1) return;
-//         node.classList.remove("active")
-//     })
+    // Escape special characters in the searchText to avoid regex issues
+    
+  
+    // Create the regular expression pattern for matching the searchText
+    const regexPattern = new RegExp(`.*${searchInput.value}.*`, 'i'); // 'i' for case-insensitive search
+  
+    // Filter the movies based on the search text
+    const filteredMovies = movies.filter((movie) => {
+      return regexPattern.test(movie.title) && searchInput.value.length >= minLength;
+    });
+    
+    console.log(filteredMovies.length);
+    if (filteredMovies.length !== 0) {
+      console.log(filteredMovies)
+    
+    resetFiltersOnClick()
+    initializeMovieLibrary(filteredMovies)
+    } else {
+      console.log('no movies found');
+      document.querySelector('.navigation-filter').classList.add('show-error')
+    
+    resetFiltersOnClick()
+    initializeMovieLibrary(movies);
+    }
+}
 
-//     selectedSlide.classList.add("active")
-// })
-// leftArrowImg.addEventListener("click", (e) => {
-//     console.log(slides)
-//     console.log(e);
-//     trackCarousel.style.transform = `translateX(0)`;
-// })
-// rightArrowImg.addEventListener("click", (e) => {
-//     console.log(slides)
-//     console.log(e);
-//     trackCarousel.style.transform = `translateX(-${slides?.[0]?.clientWidth * scrollSlides}px)`;
-// })
 
-// when I click left, move slides to the left
-// when I click right, move slides to the right
-// when I click the nav indicators, move to that slide
