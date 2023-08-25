@@ -25,6 +25,13 @@ module.exports = {
         hot: true,              // hot reloading
         compress: true,
         historyApiFallback: true,
+        liveReload: true,
+        watchFiles: {
+            paths: ['src/**/*.js', 'public/**/*', 'src/*.html'],
+            options: {
+              usePolling: false,
+            },
+          },
     },
     module: {                       //this is used for loaders
         rules: [
@@ -32,8 +39,10 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     'style-loader',
-                    'css-loader',
-                    'sass-loader'
+                    {
+                        loader: 'css-loader', options: { importLoaders: 1 }
+                    },
+                    'postcss-loader'
                 ]
             },
             {

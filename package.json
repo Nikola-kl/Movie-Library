@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack serve"
+    "build": "export NODE_ENV=production && webpack",
+    "dev": "webpack serve --mode=development --open"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "sass": "^1.64.1",
     "sass-loader": "^13.3.2",
     "style-loader": "^3.3.3",
+    "tailwindcss": "^3.3.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
@@ -30,6 +31,9 @@
     "dotenv-webpack": "^8.0.1",
     "firebase": "^10.1.0",
     "graceful-fs": "^4.2.11",
+    "postcss": "^8.4.28",
+    "postcss-loader": "^7.3.3",
+    "postcss-preset-env": "^9.1.1",
     "tar": "^6.1.15",
     "uuid": "^9.0.0"
   }
