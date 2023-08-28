@@ -1,41 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans&family=Press+Start+2P&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans&family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Monoton&display=swap");
 
 @layer base {
-    :root {
-        
-
-        /* collapsed nav */
-        --genre-width: 50px;
-
-    }
+  :root {
+    /* collapsed nav */
+    --genre-width: 50px;
+  }
 }
 
 .text-shadow {
-    text-shadow: 1px 1px 2px black;
+  text-shadow: 1px 1px 2px black;
 }
 
 .card-shadow {
-    box-shadow: 0 0 20px rgba(122, 122, 122, 0.20);
+  box-shadow: 0 0 20px rgba(122, 122, 122, 0.2);
 }
 
 .text-gradient {
-    background: linear-gradient(rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 1));
+  background: linear-gradient(rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 1));
 }
 
 .show-error::before {
-    position: absolute;
-    /* background: rgba(255, 255, 255, 0.438); */
-    color: rgb(255, 216, 43);
-    content: attr(data-error);
-    text-align: center;
-    width: 200px;
-    /* left: 1rem; */
-    height: 10px;
-    top: -0.1rem;
-    transform: translateY(-100%);
+  position: absolute;
+  color: rgb(255, 216, 43);
+  content: attr(data-error);
+  text-align: center;
+  width: 200px;
+  height: 10px;
+  top: -0.1rem;
+  transform: translateY(-100%);
 }

@@ -24,7 +24,6 @@ function ratingsFilter(e) {
 //add utility class
 function utilityClass(e) {
   const filterItem = e;
-  console.log(filterItem);
   filterItem.classList.add("text-sunflower-400", "active");
 }
 

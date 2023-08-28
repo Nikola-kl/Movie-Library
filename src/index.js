@@ -81,8 +81,6 @@ function checkValidInput() {
 
 // THIS CHECKS FOR MATCHES IN INPUT AND TITLES BY USING REGEX
 function filterBySearch() {
-  console.log(searchInput.value);
-
   const minLength = 1; // Minimum length of the search text
 
   // Escape special characters in the searchText to avoid regex issues
@@ -97,16 +95,11 @@ function filterBySearch() {
     );
   });
 
-  console.log(filteredMovies.length);
   if (filteredMovies.length !== 0) {
-    console.log(filteredMovies);
-
     resetFiltersOnClick();
     initializeMovieLibrary(filteredMovies);
   } else {
-    console.log("no movies found");
     document.querySelector(".navigation-filter").classList.add("show-error");
-
     resetFiltersOnClick();
     initializeMovieLibrary(movies);
   }

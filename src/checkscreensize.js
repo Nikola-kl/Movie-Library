@@ -6,14 +6,12 @@ import { removePopupCard } from "./movies";
 window.addEventListener("resize", function () {
   screenWidth = window.innerWidth;
   screenHeight = window.innerHeight;
-  // console.log(screenWidth)
 });
 
 function checkForFullScreenCard(e) {
   const target = e.target;
 
   if (screenWidth <= 650 && target.closest(".card")) {
-    console.log(target.closest(".popupCard"));
     removePopupCard();
   }
 }

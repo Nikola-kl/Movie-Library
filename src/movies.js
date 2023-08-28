@@ -1,21 +1,21 @@
-import { movies } from './index.js';
-import { checkForFullScreenCard } from './checkscreensize.js';
+import { movies } from "./index.js";
+import { checkForFullScreenCard } from "./checkscreensize.js";
 
-
-
-const popupCardContainer = document.getElementById('popupCardContainer');
-const popupCardContainerContent =document.getElementById("popupCardContainerContent");
+const popupCardContainer = document.getElementById("popupCardContainer");
+const popupCardContainerContent = document.getElementById(
+  "popupCardContainerContent"
+);
 //initialize movies
 // fills the library with movies, in an order based on conditions
 function initializeMovieLibrary(movies) {
-      let movieList = movies
-      removeMovieCards()
-    
-  if (mostViewed.classList.contains('active') === true) {
-        movieList.forEach((movie) => {
-          const movieCard = document.createElement('div');
-          movieCard.addEventListener('click', showPopupCard);
-          movieCard.innerHTML = `
+  let movieList = movies;
+  removeMovieCards();
+
+  if (mostViewed.classList.contains("active") === true) {
+    movieList.forEach((movie) => {
+      const movieCard = document.createElement("div");
+      movieCard.addEventListener("click", showPopupCard);
+      movieCard.innerHTML = `
           <div class="card w-full aspect-[9/16] bg-cover flex flex-col overflow-hidden relative opacity-75 transition-all focus-within:opacity-100 focus-within:scale-[1.04] focus-within:z-[1] hover:opacity-100 hover:scale-[1.04] hover:z-[1] group card-shadow" tabindex="1"
           data-id="${movie.id}" 
           data-genre="${movie.genre}"
@@ -33,14 +33,12 @@ function initializeMovieLibrary(movies) {
                 </div>
               </div>
             </div>`;
-            document.getElementById('cardsWrapper').appendChild(movieCard);
-        });
-      
-  } else if (ratings.classList.contains('active') === true){
-    
+      document.getElementById("cardsWrapper").appendChild(movieCard);
+    });
+  } else if (ratings.classList.contains("active") === true) {
     movieList.forEach((movie) => {
-      const movieCard = document.createElement('div');
-      movieCard.addEventListener('click', showPopupCard);
+      const movieCard = document.createElement("div");
+      movieCard.addEventListener("click", showPopupCard);
       movieCard.innerHTML = `
       <div class="card w-full aspect-[9/16] bg-cover flex flex-col overflow-hidden relative  opacity-75 transition-all focus-within:opacity-100 focus-within:grayscale-0 focus-within:scale-[1.04] focus-within:z-[1]   hover:opacity-100 hover:grayscale-0 hover:scale-[1.04] hover:z-[1] group card-shadow" tabindex="1"
       data-id="${movie.id}" 
@@ -59,14 +57,14 @@ function initializeMovieLibrary(movies) {
             </div>
           </div>
         </div>`;
-        document.getElementById('cardsWrapper').appendChild(movieCard);
+      document.getElementById("cardsWrapper").appendChild(movieCard);
     });
   } else {
-    let randomizedMovieList = movieList.sort(() => Math.random() - .5);
-   
-      randomizedMovieList.forEach((movie) => {
-      const movieCard = document.createElement('div');
-      movieCard.addEventListener('click', showPopupCard);
+    let randomizedMovieList = movieList.sort(() => Math.random() - 0.5);
+
+    randomizedMovieList.forEach((movie) => {
+      const movieCard = document.createElement("div");
+      movieCard.addEventListener("click", showPopupCard);
       movieCard.innerHTML = `
         <div class="card w-full aspect-[9/16] bg-cover flex flex-col overflow-hidden relative  opacity-75 transition-all focus-within:opacity-100 focus-within:grayscale-0 focus-within:scale-[1.04] focus-within:z-[1]   hover:opacity-100 hover:grayscale-0 hover:scale-[1.04] hover:z-[1] group card-shadow" tabindex="1" 
         data-id="${movie.id}"
@@ -85,27 +83,29 @@ function initializeMovieLibrary(movies) {
               </div>
             </div>
           </div>`;
-        document.getElementById('cardsWrapper').appendChild(movieCard);     
-      });
-    };
-    
+      document.getElementById("cardsWrapper").appendChild(movieCard);
+    });
+  }
 }
-
 
 // POPUP CARD SETUP
 function showPopupCard(e) {
-  console.log('i clicked');
-  const clickedCard = e.target.closest('.card');
-  const movieId = clickedCard.getAttribute('data-id');
-  console.log(clickedCard.getAttribute('data-id'));
+  const clickedCard = e.target.closest(".card");
+  const movieId = clickedCard.getAttribute("data-id");
 
   // Finds the movie in the 'movies' array using the retrieved movie ID from the getAttribute
 
-  const movie = movies.find((movie) => movie.id === movieId)
+  const movie = movies.find((movie) => movie.id === movieId);
   document.body.style.overflow = "hidden";
   if (movie) {
-    const popupCard = document.createElement('div');
-    popupCard.classList.add('overflow-hidden', 'w-full', 'h-full', 'relative', 'aspect-[9/16]');
+    const popupCard = document.createElement("div");
+    popupCard.classList.add(
+      "overflow-hidden",
+      "w-full",
+      "h-full",
+      "relative",
+      "aspect-[9/16]"
+    );
     popupCard.innerHTML = `
           <img class="w-full h-full object-cover aspect-[9/16]" src="${movie.img}" alt="">
          
@@ -118,30 +118,34 @@ function showPopupCard(e) {
           </div>
         `;
     popupCardContainerContent.appendChild(popupCard);
-    popupCardContainer.classList.remove('hidden');
-    popupCard.addEventListener('click', checkForFullScreenCard);
-    popupCard.addEventListener('touchstart', checkForFullScreenCard);
+    popupCardContainer.classList.remove("hidden");
+    popupCard.addEventListener("click", checkForFullScreenCard);
+    popupCard.addEventListener("touchstart", checkForFullScreenCard);
   }
-};
+}
 
 //popupcard deletion
 
 function removePopupCard() {
   while (popupCardContainerContent.firstChild) {
     popupCardContainerContent.removeChild(popupCardContainerContent.firstChild);
-    popupCardContainer.classList.add("hidden")
+    popupCardContainer.classList.add("hidden");
   }
   document.body.style.overflow = null;
 }
 
-
 // remove movies
 
 function removeMovieCards() {
-    const allMovieCardsWrapper = document.getElementById('cardsWrapper');
-    while (allMovieCardsWrapper.firstChild) {
-      allMovieCardsWrapper.removeChild(allMovieCardsWrapper.firstChild);
-    }
+  const allMovieCardsWrapper = document.getElementById("cardsWrapper");
+  while (allMovieCardsWrapper.firstChild) {
+    allMovieCardsWrapper.removeChild(allMovieCardsWrapper.firstChild);
   }
+}
 
-  export { initializeMovieLibrary, showPopupCard, removeMovieCards, removePopupCard };
+export {
+  initializeMovieLibrary,
+  showPopupCard,
+  removeMovieCards,
+  removePopupCard,
+};
