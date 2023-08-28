@@ -1,4 +1,9 @@
 This is a movie library that pulls my database from my firebase cloud.
+Made with HTML, CSS and JAVASCRIPT
+
+The initial phase of the application included an environment setup with webpack and a basic design setup.
+The next stage of development included a firebase database with my own custom movies and finished functionalities.
+Later in the application development I substituted vanilla CSS with Tailwind to recreate the same design (with some adjustments).
 
 To see the functionality with the custom movies I made, use these in the index.js file:
 
